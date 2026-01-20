@@ -1,0 +1,139 @@
+.leaderboard-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: #0f172a;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.leaderboard-header h2 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.leaderboard-header p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+.leaderboard-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    background: #f8fafc;
+    padding: 1.5rem;
+    text-align: left;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.leaderboard-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.leaderboard-table tr:hover {
+    background: #fcfcfc;
+}
+
+/* Rank Styling */
+.rank-badge {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.rank-1 {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Mock Gold color fallback */
+.rank-2 {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.rank-3 {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+/* Trader Avatar */
+.trader-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.trader-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.trader-name {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.balance-cell {
+    font-family: 'Roboto Mono', monospace;
+    /* If available, else default mono */
+    font-weight: 600;
+    color: #059669;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.status-badge.gold {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.status-badge.silver {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.status-badge.bronze {
+    background: #ffedd5;
+    color: #9a3412;
+}

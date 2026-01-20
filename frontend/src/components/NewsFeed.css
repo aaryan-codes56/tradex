@@ -1,0 +1,90 @@
+.news-feed-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.news-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+}
+
+.news-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.news-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.news-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-item:hover {
+    background: #f8fafc;
+}
+
+.news-content h4 {
+    margin: 0 0 0.4rem 0;
+    color: #334155;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.news-meta {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.news-dot {
+    font-size: 0.6rem;
+}
+
+.news-sentiment {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 600;
+    margin-left: 1rem;
+    white-space: nowrap;
+}
+
+.sentiment-positive {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.sentiment-negative {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.sentiment-neutral {
+    background: #f1f5f9;
+    color: #475569;
+}

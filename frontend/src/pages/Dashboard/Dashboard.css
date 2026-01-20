@@ -1,0 +1,386 @@
+/* ... existing styles ... */
+/* Using "append" (overwrite with current + new) logic by just adding to the end in practice or overwriting with full file if I had it all. 
+   Since I have the full file content from previous `view_file` (Step 650), I can just overwrite it with the new additions. */
+
+.dashboard-container {
+    padding: 2rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #0f172a;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-cards {
+    display: flex;
+    gap: 1rem;
+}
+
+.subtitle {
+    color: #64748b;
+    margin: 0;
+}
+
+.sentiment-card {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-align: right;
+    min-width: 200px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.ai-card {
+    border: 1px solid #93c5fd;
+    background: #eff6ff;
+    text-align: left;
+    border-left: 4px solid #2563eb;
+}
+
+.ai-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2563eb;
+    font-size: 1rem;
+}
+
+.sentiment-value {
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.confidence,
+.prediction-price {
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: normal;
+}
+
+.prediction-price {
+    margin-top: 0.5rem;
+}
+
+.ai-explanation {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.explanation-summary {
+    font-weight: 600;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.prices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.coin-card {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+}
+
+.coin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.coin-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #0f172a;
+}
+
+.coin-symbol {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.coin-price h2 {
+    margin: 0.5rem 0 0;
+    font-size: 1.5rem;
+    color: #0f172a;
+}
+
+.change {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Keeping functional colors for financial context but slightly muted/adjusted if needed, 
+   but standard Green/Red is best for trading. */
+.change.positive {
+    color: #16a34a;
+    /* Green 600 */
+}
+
+.change.negative {
+    color: #dc2626;
+    /* Red 600 */
+}
+
+.analyze-btn {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #475569;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.analyze-btn:hover:not(:disabled) {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.analyze-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.charts-section {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    height: 100%;
+}
+
+.chart-placeholder {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafc;
+    border-radius: 8px;
+    color: #94a3b8;
+    border: 2px dashed #e2e8f0;
+}
+
+.chart-container-dashboard {
+    height: 400px;
+    width: 100%;
+}
+
+/* New Trading Styles */
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.trade-btn {
+    flex: 1;
+    padding: 0.5rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.trade-btn:hover {
+    background: #1d4ed8;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    color: #0f172a;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+    color: #0f172a;
+    margin-top: 0;
+}
+
+.trade-type {
+    display: flex;
+    margin-bottom: 1rem;
+    background: #f1f5f9;
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.trade-type button {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.trade-type button.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.trade-type button.active.buy {
+    color: #16a34a;
+}
+
+.trade-type button.active.sell {
+    color: #dc2626;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.modal-actions button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.confirm-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.status-msg {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.holding-badge {
+    font-size: 0.8rem;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.2rem;
+    display: inline-block;
+}
+
+/* Dashboard Grid Layout for Chart + News */
+.dashboard-grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* Chart takes 2/3, News takes 1/3 */
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .news-section {
+        min-height: 300px;
+    }
+}
+
+/* Advanced Order Styles */
+.order-type-selector {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.order-type-selector label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.order-type-selector select {
+    padding: 0.4rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: white;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.advanced-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.form-group.small input {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+}
