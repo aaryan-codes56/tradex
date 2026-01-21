@@ -19,7 +19,41 @@ const calculatePositionSize = (balance, price, volatility = 0.02, riskPerTrade =
     return positionValue / price; // Returns quantity
 };
 
+/**
+ * Validates if a trade is allowed based on risk parameters
+ * @param {Object} user - User object with balance and risk settings
+ * @param {Number} tradeAmount - Total value of the trade
+ * @param {Number} currentDailyLoss - Loss incurred so far today
+ * @returns {Object} { allowed: boolean, reason: string }
+ */
+const checkRiskConstraints = (user, tradeAmount, currentDailyLoss = 0) => {
+    const MAX_DAILY_LOSS_PERCENT = 0.05; // 5% max daily loss
+    const MAX_POSITION_SIZE_PERCENT = 0.20; // 20% max portfolio in one asset
+
+    const maxDailyLoss = user.paperBalance * MAX_DAILY_LOSS_PERCENT;
+    const maxPositionSize = user.paperBalance * MAX_POSITION_SIZE_PERCENT;
+
+    // Check 1: Max Position Size
+    if (tradeAmount > maxPositionSize) {
+        return {
+            allowed: false,
+            reason: `Risk Alert: Position size exceeds 20% limit ($${maxPositionSize.toFixed(2)})`
+        };
+    }
+
+    // Check 2: Max Daily Loss (Stop trading if hit)
+    if (currentDailyLoss >= maxDailyLoss) {
+        return {
+            allowed: false,
+            reason: `Risk Alert: Daily loss limit hit ($${maxDailyLoss.toFixed(2)})`
+        };
+    }
+
+    return { allowed: true };
+};
+
 module.exports = {
     calculateStopLoss,
-    calculatePositionSize
+    calculatePositionSize,
+    checkRiskConstraints
 };

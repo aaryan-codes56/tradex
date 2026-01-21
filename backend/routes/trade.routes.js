@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Trade = require('../models/Trade');
-const { calculateStopLoss, calculatePositionSize } = require('../utils/risk.utils');
+const { calculateStopLoss, calculatePositionSize, checkRiskConstraints } = require('../utils/risk.utils');
 const { protect } = require('./auth.routes');
 
 // @route   POST /api/trades/paper
@@ -20,6 +20,30 @@ router.post('/paper', protect, async (req, res) => {
 
     try {
         const user = await User.findById(req.user._id);
+        const totalCost = quantity * price;
+
+        // --- RISK MANAGEMENT CHECK ---
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const todayTrades = await Trade.find({
+            userId: user._id,
+            timestamp: { $gte: startOfDay },
+            status: 'FILLED'
+        });
+
+        // specific calculation for daily realized PnL could be complex, 
+        // using simple proxy: sum of negative outcomes if we had a PnL field.
+        // For now, we pass 0 for daily loss as a placeholder or implement specific logic later.
+        // But we DO check Position Sizing which is critical.
+
+        if (action === 'BUY') {
+            const riskCheck = checkRiskConstraints(user, totalCost, 0); // Passing 0 for daily loss for now
+            if (!riskCheck.allowed) {
+                return res.status(400).json({ message: riskCheck.reason });
+            }
+        }
+        // -----------------------------
 
         // Handle LIMIT orders (Pending execution)
         if (orderType === 'LIMIT') {
@@ -51,7 +75,7 @@ router.post('/paper', protect, async (req, res) => {
         }
 
         // MARKET ORDER EXECUTION
-        const totalCost = quantity * price;
+        // const totalCost = quantity * price; // Already defined above
 
         if (action === 'BUY') {
             if (user.paperBalance < totalCost) {

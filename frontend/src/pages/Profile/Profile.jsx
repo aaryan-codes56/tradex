@@ -7,6 +7,8 @@ const Profile = () => {
     const { user, logout, login } = useContext(AuthContext); // Assuming login/setUser updates context
     const [pfpUrl, setPfpUrl] = useState(user?.profilePicture || '');
     const [username, setUsername] = useState(user?.username || '');
+    const [fullName, setFullName] = useState(user?.fullName || '');
+    const [bio, setBio] = useState(user?.bio || '');
     const [status, setStatus] = useState('');
 
     const handleUpdateProfile = async (e) => {
@@ -18,19 +20,12 @@ const Profile = () => {
 
             const { data } = await axios.put('http://localhost:5001/api/auth/profile', {
                 username,
+                fullName,
+                bio,
                 profilePicture: pfpUrl
             }, config);
 
-            // Update local storage and context if possible, or just force reload
-            // Ideally AuthContext should have an 'updateUser' method, but for now we can rely on re-login simulation or just updating state
-            // Let's assume user context auto-updates or we need to manually update it
-            // Simple hack for now if update function not available: update user object in local storage?
-            // Better: reload page or call a function from context if it exists.
-            // If login function accepts user data, we can call it.
-
-            // For this MVP, we will rely on a simple alert and maybe context update if exposed, if not just reload.
             localStorage.setItem('user', JSON.stringify(data));
-            // Trigger a reload to refresh context
             window.location.reload();
 
         } catch (error) {
@@ -38,7 +33,6 @@ const Profile = () => {
             console.error(error);
         }
     };
-
     const handleDeleteAccount = async () => {
         if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             try {
@@ -64,14 +58,34 @@ const Profile = () => {
                     )}
                 </div>
                 <div className="profile-info">
-                    <h2>{user?.username}</h2>
+                    <h2>{user?.fullName || user?.username}</h2>
                     <p>{user?.email}</p>
+                    {user?.bio && <p style={{ margin: '0.5rem 0', color: '#64748b' }}>{user.bio}</p>}
                 </div>
             </div>
 
             <div className="profile-section">
                 <h3>Edit Profile</h3>
                 <form onSubmit={handleUpdateProfile}>
+                    <div className="form-group">
+                        <label>Full Name</label>
+                        <input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            placeholder="John Doe"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Bio</label>
+                        <input
+                            type="text"
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            placeholder="Crypto enthusiast..."
+                            maxLength={160}
+                        />
+                    </div>
                     <div className="form-group">
                         <label>Username</label>
                         <input
@@ -102,5 +116,6 @@ const Profile = () => {
         </div>
     );
 };
+
 
 export default Profile;

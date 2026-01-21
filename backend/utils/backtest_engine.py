@@ -11,8 +11,20 @@ def generate_historical_data(symbol, days=30):
     
     # Random walk with drift
     np.random.seed(42)
-    start_price = 50000 if symbol == 'BTC' else 3000 if symbol == 'ETH' else 100
-    returns = np.random.normal(0.0005, 0.01, size=(len(date_rng)))
+    # Crypto Start Prices
+    start_prices = {
+        'BTC': 65000,
+        'ETH': 3500,
+        'SOL': 145,
+        'ADA': 0.45,
+        'XRP': 0.60,
+        'DOGE': 0.12,
+        'DOT': 7.50
+    }
+    start_price = start_prices.get(symbol, 100)
+    
+    # Higher volatility for crypto
+    returns = np.random.normal(0.0002, 0.02, size=(len(date_rng)))
     price_path = start_price * np.exp(np.cumsum(returns))
     
     df['close'] = price_path
@@ -69,15 +81,62 @@ def run_backtest(symbol, strategy, duration):
 
     # Final Liquidation
     final_balance = balance + (position * df.iloc[-1]['close'])
-    roi = ((final_balance - initial_balance) / initial_balance) * 100
+    total_return = (final_balance - initial_balance) / initial_balance * 100
     
+    # Calculate Metrics
+    df['balance'] = initial_balance # Initialize
+    # Reconstruct balance history for drawdown/sharpe
+    # This is a simplification; for accurate sharpe we need daily returns 
+    # based on the mocked 'trades' list and price action.
+    
+    # Win Rate
+    winning_trades = [t for t in trades if t['type'] == 'SELL' and t['balance'] > initial_balance] # This logic is flawed because balance accumulates. 
+    # Correct Win Rate Logic:
+    profits = []
+    trade_open_price = 0
+    for t in trades:
+        if t['type'] == 'BUY':
+            trade_open_price = t['price']
+        elif t['type'] == 'SELL':
+            pnl = (t['price'] - trade_open_price) / trade_open_price
+            profits.append(pnl)
+    
+    win_rate = (len([p for p in profits if p > 0]) / len(profits) * 100) if profits else 0
+    
+    # Max Drawdown & Sharpe (Approximation based on trade path)
+    # Generate daily balance points for Sharpe
+    balance_history = [t['balance'] for t in trades] if trades else [initial_balance]
+    balance_array = np.array(balance_history)
+    
+    # Max Drawdown
+    peak = initial_balance
+    max_drawdown = 0
+    for val in balance_history:
+        if val > peak:
+            peak = val
+        dd = (peak - val) / peak
+        if dd > max_drawdown:
+            max_drawdown = dd
+            
+    # Sharpe Ratio (assuming risk-free rate 0 for simplicity)
+    # We need returns series
+    if len(profits) > 1:
+        returns_std = np.std(profits)
+        avg_return = np.mean(profits)
+        sharpe = (avg_return / returns_std) * np.sqrt(252) if returns_std != 0 else 0 # Annualized
+    else:
+        sharpe = 0
+
     return {
         "symbol": symbol,
         "strategy": strategy,
         "initial_balance": initial_balance,
         "final_balance": final_balance,
-        "roi": roi,
+        "roi": total_return,
         "trade_count": len(trades),
+        "win_rate": win_rate,
+        "max_drawdown": max_drawdown * 100, # Percentage
+        "sharpe_ratio": sharpe,
         "history": trades
     }
 

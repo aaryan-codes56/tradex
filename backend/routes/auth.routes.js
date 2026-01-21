@@ -100,6 +100,8 @@ router.get('/profile', protect, async (req, res) => {
         res.json({
             _id: req.user._id,
             username: req.user.username,
+            fullName: req.user.fullName,
+            bio: req.user.bio,
             email: req.user.email,
             profilePicture: req.user.profilePicture,
             preferences: req.user.preferences
@@ -118,6 +120,8 @@ router.put('/profile', protect, async (req, res) => {
 
         if (user) {
             user.username = req.body.username || user.username;
+            user.fullName = req.body.fullName !== undefined ? req.body.fullName : user.fullName;
+            user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
             user.email = req.body.email || user.email;
             user.profilePicture = req.body.profilePicture !== undefined ? req.body.profilePicture : user.profilePicture;
 
@@ -134,6 +138,8 @@ router.put('/profile', protect, async (req, res) => {
             res.json({
                 _id: updatedUser._id,
                 username: updatedUser.username,
+                fullName: updatedUser.fullName,
+                bio: updatedUser.bio,
                 email: updatedUser.email,
                 profilePicture: updatedUser.profilePicture,
                 preferences: updatedUser.preferences,
@@ -144,6 +150,43 @@ router.put('/profile', protect, async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Server error updating profile', error: error.message });
+    }
+});
+
+// @route   PUT /api/auth/balance
+// @desc    Update paper balance (Reset or Deposit)
+// @access  Private
+router.put('/balance', protect, async (req, res) => {
+    try {
+        const { type, amount } = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (type === 'reset') {
+            user.paperBalance = 10000;
+            user.investedCapital = 10000;
+            user.portfolio = {};
+        } else if (type === 'deposit') {
+            if (!amount || amount <= 0) return res.status(400).json({ message: 'Invalid amount' });
+            user.paperBalance += parseFloat(amount);
+            // Initialize investedCapital if it doesn't exist yet (for old users)
+            if (!user.investedCapital) user.investedCapital = 10000;
+            user.investedCapital += parseFloat(amount);
+        } else {
+            return res.status(400).json({ message: 'Invalid balance operation' });
+        }
+
+        await user.save();
+
+        res.json({
+            balance: user.paperBalance,
+            portfolio: user.portfolio,
+            message: type === 'reset' ? 'Account reset successfully' : `Deposited $${amount}`
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error updating balance', error: error.message });
     }
 });
 

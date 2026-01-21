@@ -41,13 +41,16 @@ const Navbar = () => {
                                 Dashboard
                             </NavLink>
                             <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                                History
+                                Portfolio
                             </NavLink>
                             <NavLink to="/backtest" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                                 Backtest
                             </NavLink>
                             <NavLink to="/leaderboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                                 Leaderboard
+                            </NavLink>
+                            <NavLink to="/strategy-builder" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                                Strategies
                             </NavLink>
 
                             <div className="profile-menu" ref={dropdownRef}>

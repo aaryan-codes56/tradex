@@ -20,11 +20,15 @@ const { router: authRoutes } = require('./routes/auth.routes');
 const marketRoutes = require('./routes/market.routes');
 const aiRoutes = require('./routes/ai.routes');
 const tradeRoutes = require('./routes/trade.routes');
+const leaderboardRoutes = require('./routes/leaderboard.routes');
+const whaleRoutes = require('./routes/whale.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/trades', tradeRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/whales', whaleRoutes);
 
 app.get('/', (req, res) => {
     res.send('TradeX API is running');

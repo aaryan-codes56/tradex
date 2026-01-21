@@ -6,7 +6,7 @@ import './Settings.css';
 const Settings = () => {
     const { user } = useContext(AuthContext);
     const [notifications, setNotifications] = useState(user?.preferences?.notifications ?? true);
-    const [theme, setTheme] = useState(user?.preferences?.theme || 'light');
+
     const [riskTolerance, setRiskTolerance] = useState(user?.preferences?.riskTolerance || 'medium');
     const [status, setStatus] = useState('');
 
@@ -19,7 +19,6 @@ const Settings = () => {
             await axios.put('http://localhost:5001/api/auth/profile', {
                 preferences: {
                     notifications,
-                    theme,
                     riskTolerance
                 }
             }, config);
@@ -27,7 +26,7 @@ const Settings = () => {
             // Update local storage manually for immediate effect
             const storedUser = JSON.parse(localStorage.getItem('user'));
             if (storedUser) {
-                storedUser.preferences = { notifications, theme, riskTolerance };
+                storedUser.preferences = { ...storedUser.preferences, notifications, riskTolerance };
                 localStorage.setItem('user', JSON.stringify(storedUser));
             }
 
@@ -36,6 +35,42 @@ const Settings = () => {
         } catch (error) {
             console.error('Error saving settings', error);
             setStatus('Error saving settings');
+        }
+    };
+
+    const handleBalanceUpdate = async (type) => {
+        if (type === 'reset' && !window.confirm('Are you sure? This will clear your portfolio and reset balance to $10,000.')) return;
+
+        setStatus('Updating Funds...');
+        try {
+            const token = localStorage.getItem('token');
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+
+            const { data } = await axios.put('http://localhost:5001/api/auth/balance', {
+                type,
+                amount: type === 'deposit' ? 1000 : 0
+            }, config);
+
+            // Update local storage
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            if (storedUser) {
+                storedUser.paperBalance = data.balance;
+                if (type === 'reset') storedUser.portfolio = data.portfolio;
+                // Ideally also update portfolio in storage if we track it there, but mostly we fetch it fresh.
+                // But Dashboard relies on fresh fetch mostly.
+                // If AuthContext keeps track, we should reload.
+                localStorage.setItem('user', JSON.stringify(storedUser));
+            }
+
+            setStatus(data.message);
+            setTimeout(() => {
+                setStatus('');
+                window.location.reload(); // Refresh to show new balance in navbar/dashboard
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error updating funds', error);
+            setStatus('Error updating funds');
         }
     };
 
@@ -71,20 +106,7 @@ const Settings = () => {
                 </label>
             </div>
 
-            <div className="setting-item">
-                <div className="setting-info">
-                    <h3>Theme</h3>
-                    <p>Choose your interface theme (System default)</p>
-                </div>
-                <select
-                    className="settings-select"
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value)}
-                >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                </select>
-            </div>
+
 
             <div className="setting-item">
                 <div className="setting-info">
@@ -100,6 +122,29 @@ const Settings = () => {
                     <option value="medium">Medium (Balanced)</option>
                     <option value="high">High (Aggressive)</option>
                 </select>
+            </div>
+
+            <div className="setting-item fund-management" style={{ display: 'block' }}>
+                <div className="setting-info" style={{ marginBottom: '1rem' }}>
+                    <h3>Manage Funds 💳</h3>
+                    <p>Top up your paper trading account or reset to default.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button
+                        className="save-btn"
+                        style={{ background: '#16a34a', flex: 1 }}
+                        onClick={() => handleBalanceUpdate('deposit')}
+                    >
+                        + Deposit $1,000
+                    </button>
+                    <button
+                        className="save-btn"
+                        style={{ background: '#dc2626', flex: 1 }}
+                        onClick={() => handleBalanceUpdate('reset')}
+                    >
+                        Reset to $10k
+                    </button>
+                </div>
             </div>
 
             <div className="setting-item" style={{ border: 'none', justifyContent: 'flex-end' }}>

@@ -12,6 +12,9 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import NewsFeed from '../../components/NewsFeed';
+import MarketHeatmap from '../../components/MarketHeatmap';
+import WhaleAlerts from '../../components/WhaleAlerts';
+import { TrendingUp, Wallet, Brain, Activity } from 'lucide-react';
 import './Dashboard.css';
 
 ChartJS.register(
@@ -176,43 +179,102 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <header className="dashboard-header">
-                <div>
-                    <h1>Market Overview</h1>
-                    <p className="subtitle">Paper Balance: ${user?.balance ? user.balance.toFixed(2) : '0.00'}</p>
-                </div>
-                <div className="header-cards">
-                    {aiPrediction && (
-                        <div className="sentiment-card ai-card">
-                            <h3>AI Signal: {aiPrediction.symbol}</h3>
-                            <div className="sentiment-value" style={{ color: aiPrediction.signal === 'BUY' ? '#16a34a' : aiPrediction.signal === 'SELL' ? '#dc2626' : '#ea580c' }}>
-                                {aiPrediction.signal}
-                                <span className="confidence">{(aiPrediction.confidence * 100).toFixed(0)}% Conf.</span>
-                            </div>
-                            <p className="prediction-price">Pred: ${aiPrediction.predictedPrice.toFixed(2)}</p>
-
-                            {aiPrediction.explanation && (
-                                <div className="ai-explanation">
-                                    <p className="explanation-summary">{aiPrediction.explanation.summary}</p>
-                                    <ul className="explanation-list">
-                                        {aiPrediction.explanation.factors.map((factor, idx) => (
-                                            <li key={idx}>{factor}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                    <div className="sentiment-card">
-                        <h3>Portfolio Value</h3>
-                        <div className="sentiment-value">
-                            ${Object.entries(user?.portfolio || {}).reduce((acc, [symbol, qty]) => {
-                                const price = prices.find(p => p.symbol === symbol)?.current_price || 0;
-                                return acc + (price * qty);
-                            }, 0).toFixed(2)}
-                        </div>
+                <div className="section-header">
+                    <div>
+                        <h1>Market Overview</h1>
+                        <p>Paper Balance: ${user?.balance?.toFixed(2) || '0.00'}</p>
                     </div>
                 </div>
             </header>
+
+            <div className="bento-grid">
+                {/* 1. Portfolio Summary */}
+                <div className="dashboard-card area-portfolio">
+                    <h3><Wallet size={18} /> Net Worth</h3>
+                    <div className="metric-value">
+                        ${Object.entries(user?.portfolio || {}).reduce((acc, [symbol, qty]) => {
+                            const price = prices.find(p => p.symbol === symbol)?.current_price || 0;
+                            return acc + (price * qty);
+                        }, 0).toFixed(2)}
+                    </div>
+                </div>
+
+                {/* 2. AI Insight */}
+                <div className={`dashboard-card area-ai ${aiPrediction ? 'ai-active' : ''}`}>
+                    <h3><Brain size={18} /> {aiPrediction ? `Signal: ${aiPrediction.symbol}` : "AI Insights"}</h3>
+                    {aiPrediction ? (
+                        <>
+                            <div className="metric-value" style={{
+                                color: aiPrediction.signal === 'BUY' ? '#16a34a' : aiPrediction.signal === 'SELL' ? '#dc2626' : '#ea580c',
+                                fontSize: '1.5rem'
+                            }}>
+                                {aiPrediction.signal}
+                            </div>
+                            <div className="metric-sub">
+                                {(aiPrediction.confidence * 100).toFixed(0)}% Confidence
+                            </div>
+                            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
+                                Pred: ${aiPrediction.predictedPrice.toFixed(2)}
+                            </p>
+                        </>
+                    ) : (
+                        <div style={{ color: '#94a3b8', fontStyle: 'italic', marginTop: 'auto' }}>
+                            Select a coin below to analyze
+                        </div>
+                    )}
+                </div>
+
+                {/* 3. Whale Watcher (Sidebar) */}
+                <div className="dashboard-card area-whales">
+                    <WhaleAlerts />
+                </div>
+
+                {/* 4. Market Heatmap */}
+                <div className="dashboard-card area-heatmap">
+                    <MarketHeatmap />
+                </div>
+
+                {/* 4. Live Prices Ticker */}
+                <div className="area-prices">
+                    {Array.isArray(prices) && prices.map((coin) => (
+                        <div key={coin.id} className="dashboard-card">
+                            <div className="coin-info">
+                                <h3>{coin.name} <span style={{ fontSize: '0.7em', color: '#94a3b8' }}>{coin.symbol.toUpperCase()}</span></h3>
+                                {user?.portfolio && user.portfolio[coin.symbol] && (
+                                    <span style={{ fontSize: '0.75rem', background: '#eff6ff', color: '#2563eb', padding: '2px 6px', borderRadius: '4px' }}>
+                                        Owned
+                                    </span>
+                                )}
+                            </div>
+                            <div className="coin-price">
+                                <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>${(coin.current_price || 0).toLocaleString()}</h2>
+                                <span className={`change ${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}`}>
+                                    {coin.price_change_percentage_24h > 0 ? '+' : ''}{coin.price_change_percentage_24h}%
+                                </span>
+                            </div>
+                            <div className="card-actions">
+                                <button className="analyze-btn" onClick={() => getAiPrediction(coin.symbol)} disabled={analysing}>
+                                    <Brain size={16} /> {analysing ? '... ' : 'Analyze'}
+                                </button>
+                                <button className="trade-btn" onClick={() => openTradeModal(coin)}>Trade</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* 5. Technical Chart */}
+                <div className="dashboard-card area-chart">
+                    <h3><Activity size={18} /> {selectedCoin ? selectedCoin.name : 'Market'} Trends</h3>
+                    <div className="chart-container-dashboard">
+                        {chartData ? <Line options={{ responsive: true, maintainAspectRatio: false }} data={chartData} /> : <p>Loading Chart...</p>}
+                    </div>
+                </div>
+
+                {/* 6. News Feed */}
+                <div className="dashboard-card area-news">
+                    <NewsFeed />
+                </div>
+            </div>
 
             {/* Trade Modal */}
             {tradeModalOpen && (
@@ -228,117 +290,59 @@ const Dashboard = () => {
                                 onClick={() => setTradeAction('SELL')}>Sell</button>
                         </div>
 
-                        <div className="order-type-selector">
-                            <label>Order Type:</label>
-                            <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
-                                <option value="MARKET">Market</option>
-                                <option value="LIMIT">Limit</option>
-                            </select>
-                        </div>
-
                         <form onSubmit={handleTrade}>
+                            <div className="order-type-selector">
+                                <label>Order Type:</label>
+                                <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+                                    <option value="MARKET">Market</option>
+                                    <option value="LIMIT">Limit</option>
+                                </select>
+                            </div>
                             {orderType === 'LIMIT' && (
                                 <div className="form-group">
                                     <label>Limit Price ($)</label>
                                     <input
-                                        type="number"
-                                        step="0.000001"
-                                        value={limitPrice}
+                                        type="number" step="0.000001" value={limitPrice}
                                         onChange={(e) => setLimitPrice(e.target.value)}
-                                        placeholder={selectedCoin.current_price.toString()}
-                                        required
+                                        placeholder={selectedCoin.current_price.toString()} required
                                     />
                                 </div>
                             )}
-
                             <div className="form-group">
                                 <label>Quantity</label>
                                 <input
-                                    type="number"
-                                    step="0.000001"
-                                    value={tradeQuantity}
-                                    onChange={(e) => setTradeQuantity(e.target.value)}
-                                    required
+                                    type="number" step="0.000001" value={tradeQuantity}
+                                    onChange={(e) => setTradeQuantity(e.target.value)} required
                                 />
                             </div>
-
                             <div className="advanced-options">
                                 <div className="form-group small">
                                     <label>Stop Loss ($)</label>
                                     <input
-                                        type="number"
-                                        step="0.000001"
-                                        value={stopLossPrice}
-                                        onChange={(e) => setStopLossPrice(e.target.value)}
-                                        placeholder="Optional"
+                                        type="number" step="0.000001" value={stopLossPrice}
+                                        onChange={(e) => setStopLossPrice(e.target.value)} placeholder="Optional"
                                     />
                                 </div>
                                 <div className="form-group small">
                                     <label>Take Profit ($)</label>
                                     <input
-                                        type="number"
-                                        step="0.000001"
-                                        value={takeProfitPrice}
-                                        onChange={(e) => setTakeProfitPrice(e.target.value)}
-                                        placeholder="Optional"
+                                        type="number" step="0.000001" value={takeProfitPrice}
+                                        onChange={(e) => setTakeProfitPrice(e.target.value)} placeholder="Optional"
                                     />
                                 </div>
                             </div>
-
-                            <p>Est. Total: ${(parseFloat(tradeQuantity || 0) * (orderType === 'LIMIT' && limitPrice ? parseFloat(limitPrice) : selectedCoin.current_price)).toFixed(2)}</p>
+                            <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#64748b' }}>
+                                Est. Total: ${(parseFloat(tradeQuantity || 0) * (orderType === 'LIMIT' && limitPrice ? parseFloat(limitPrice) : selectedCoin.current_price)).toFixed(2)}
+                            </p>
                             {tradeStatus && <p className="status-msg">{tradeStatus}</p>}
                             <div className="modal-actions">
                                 <button type="button" onClick={() => setTradeModalOpen(false)}>Cancel</button>
-                                <button type="submit" className="confirm-btn">
-                                    {orderType === 'LIMIT' ? 'Place Order' : `Confirm ${tradeAction}`}
-                                </button>
+                                <button type="submit" className="confirm-btn">{orderType === 'LIMIT' ? 'Place Order' : `Confirm ${tradeAction}`}</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-
-            <div className="prices-grid">
-                {Array.isArray(prices) && prices.map((coin) => (
-                    <div key={coin.id} className="coin-card">
-                        <div className="coin-info">
-                            <h3>{coin.name}</h3>
-                            <p className="coin-symbol">{coin.symbol.toUpperCase()}</p>
-                            {user?.portfolio && user.portfolio[coin.symbol] && (
-                                <span className="holding-badge">{user.portfolio[coin.symbol]} held</span>
-                            )}
-                        </div>
-                        <div className="coin-price">
-                            <h2>${coin.current_price.toLocaleString()}</h2>
-                            <span className={`change ${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}`}>
-                                {coin.price_change_percentage_24h > 0 ? '+' : ''}{coin.price_change_percentage_24h}%
-                            </span>
-                        </div>
-                        <div className="card-actions">
-                            <button
-                                className="analyze-btn"
-                                onClick={() => getAiPrediction(coin.symbol)}
-                                disabled={analysing}
-                            >
-                                {analysing ? 'AI Analyze' : 'AI Analyze'}
-                            </button>
-                            <button className="trade-btn" onClick={() => openTradeModal(coin)}>Trade</button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="dashboard-grid-layout">
-                <div className="charts-section">
-                    <h2>{selectedCoin ? selectedCoin.name : 'Market'} Trends</h2>
-                    <div className="chart-container-dashboard" style={{ height: '400px' }}>
-                        {chartData ? <Line options={{ responsive: true, maintainAspectRatio: false }} data={chartData} /> : <p>Loading Chart...</p>}
-                    </div>
-                </div>
-                <div className="news-section">
-                    <NewsFeed />
-                </div>
-            </div>
         </div>
     );
 };

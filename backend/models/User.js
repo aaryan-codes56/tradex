@@ -9,6 +9,15 @@ const userSchema = new mongoose.Schema({
         trim: true,
         minlength: 3
     },
+    fullName: {
+        type: String,
+        default: ''
+    },
+    bio: {
+        type: String,
+        default: '',
+        maxlength: 160
+    },
     email: {
         type: String,
         required: true,
@@ -36,6 +45,10 @@ const userSchema = new mongoose.Schema({
         riskTolerance: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' }
     },
     paperBalance: {
+        type: Number,
+        default: 10000
+    },
+    investedCapital: {
         type: Number,
         default: 10000
     },

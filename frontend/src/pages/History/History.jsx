@@ -55,8 +55,8 @@ const History = () => {
                                         {trade.action}
                                     </td>
                                     <td>{trade.quantity}</td>
-                                    <td>₹{trade.price.toFixed(2)}</td>
-                                    <td>₹{trade.total.toFixed(2)}</td>
+                                    <td>${trade.price.toFixed(2)}</td>
+                                    <td>${trade.total.toFixed(2)}</td>
                                     <td>
                                         <span className={`badge badge-${trade.riskMetrics?.riskLevel.toLowerCase()}`}>
                                             {trade.riskMetrics?.riskLevel || 'N/A'}

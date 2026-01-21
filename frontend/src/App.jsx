@@ -9,7 +9,9 @@ import Leaderboard from './pages/Leaderboard/Leaderboard';
 import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings/Settings';
 import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute'; // Restored
+import TradeGPTWidget from './components/TradeGPTWidget';
+import StrategyBuilder from './pages/StrategyBuilder/StrategyBuilder';
 
 function App() {
   return (
@@ -52,6 +54,14 @@ function App() {
           }
         />
         <Route
+          path="/strategy-builder"
+          element={
+            <ProtectedRoute>
+              <StrategyBuilder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/profile"
           element={
             <ProtectedRoute>
@@ -68,6 +78,7 @@ function App() {
           }
         />
       </Routes>
+      <TradeGPTWidget />
     </>
   );
 }
