@@ -113,38 +113,42 @@
 
 .danger-zone {
     margin-top: 3rem;
-    padding: 2rem;
-    border: 1px solid #fca5a5;
-    background: #fef2f2;
-    border-radius: 12px;
-}
-
-.danger-zone h3 {
-    color: #b91c1c;
-    margin-top: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.danger-zone p {
-    color: #7f1d1d;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
+    /* Clean container */
 }
 
 .delete-btn {
-    padding: 0.75rem 1.5rem;
-    background: white;
-    color: #dc2626;
-    border: 1px solid #fecaca;
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background: #dc2626;
+    color: white;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
     transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
 }
 
 .delete-btn:hover {
-    background: #fee2e2;
-    border-color: #fca5a5;
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 640px) {
+    .profile-container {
+        padding: 1.5rem;
+        margin: 1.5rem 1rem;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-info h2 {
+        font-size: 1.5rem;
+    }
 }

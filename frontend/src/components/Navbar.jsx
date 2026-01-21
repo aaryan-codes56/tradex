@@ -1,11 +1,13 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const toggleDropdown = () => {
@@ -34,22 +36,25 @@ const Navbar = () => {
                         TradeX
                     </Link>
                 </div>
-                <div className="navbar-links">
+                <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+                <div className={`navbar-links ${isMenuOpen ? 'mobile-open' : ''}`}>
                     {user ? (
                         <>
-                            <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                            <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} onClick={() => setIsMenuOpen(false)}>
                                 Dashboard
                             </NavLink>
-                            <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                            <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} onClick={() => setIsMenuOpen(false)}>
                                 Portfolio
                             </NavLink>
-                            <NavLink to="/backtest" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                            <NavLink to="/backtest" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} onClick={() => setIsMenuOpen(false)}>
                                 Backtest
                             </NavLink>
-                            <NavLink to="/leaderboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                            <NavLink to="/leaderboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} onClick={() => setIsMenuOpen(false)}>
                                 Leaderboard
                             </NavLink>
-                            <NavLink to="/strategy-builder" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                            <NavLink to="/strategy-builder" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} onClick={() => setIsMenuOpen(false)}>
                                 Strategies
                             </NavLink>
 
@@ -69,14 +74,14 @@ const Navbar = () => {
                                             <span className="user-name">{user?.username || 'User'}</span>
                                             <span className="user-email">{user?.email || ''}</span>
                                         </div>
-                                        <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                                        <Link to="/profile" className="dropdown-item" onClick={() => { setDropdownOpen(false); setIsMenuOpen(false); }}>
                                             Profile
                                         </Link>
-                                        <Link to="/settings" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                                        <Link to="/settings" className="dropdown-item" onClick={() => { setDropdownOpen(false); setIsMenuOpen(false); }}>
                                             Settings
                                         </Link>
                                         <div className="dropdown-divider"></div>
-                                        <button onClick={logout} className="dropdown-item logout">
+                                        <button onClick={() => { logout(); setIsMenuOpen(false); }} className="dropdown-item logout">
                                             Logout
                                         </button>
                                     </div>
@@ -85,8 +90,8 @@ const Navbar = () => {
                         </>
                     ) : (
                         <>
-                            <Link to="/login" className="nav-link">Login</Link>
-                            <Link to="/signup" className="signup-link">Sign Up</Link>
+                            <Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>Login</Link>
+                            <Link to="/signup" className="signup-link" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
                         </>
                     )}
                 </div>
