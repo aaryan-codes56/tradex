@@ -56,15 +56,15 @@ const Navbar = () => {
                                         {user.profilePicture ? (
                                             <img src={user.profilePicture} alt="P" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                                         ) : (
-                                            user.username.charAt(0).toUpperCase()
+                                            user?.username?.charAt(0).toUpperCase() || 'U'
                                         )}
                                     </div>
                                 </div>
                                 {dropdownOpen && (
                                     <div className="dropdown-menu">
                                         <div className="dropdown-header">
-                                            <span className="user-name">{user.username}</span>
-                                            <span className="user-email">{user.email}</span>
+                                            <span className="user-name">{user?.username || 'User'}</span>
+                                            <span className="user-email">{user?.email || ''}</span>
                                         </div>
                                         <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                                             Profile

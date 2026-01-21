@@ -2,81 +2,146 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f8fafc;
   color: #0f172a;
 }
 
 .auth-card {
   background: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .auth-card h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #2563eb;
+  margin-bottom: 2rem;
+  color: #1e293b;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: #64748b;
+  font-size: 0.95rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* Input Group with Icons */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  /* Let clicks pass through */
+}
+
+.input-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.75rem;
-  border-radius: 6px;
+  padding: 0.875rem 1rem 0.875rem 3.5rem;
+  /* Left padding for icon */
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #0f172a;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #94a3b8;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Password Toggle */
+.password-toggle-btn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+  color: #475569;
+}
+
+/* Adjust padding for password input to accommodate both icons */
+.input-group input[type="password"],
+.input-group input[type="text"] {
+  padding-right: 2.75rem;
 }
 
 .auth-btn {
   width: 100%;
-  padding: 0.75rem;
-  margin-top: 1rem;
+  padding: 0.875rem;
+  margin-top: 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #2563eb;
   color: #ffffff;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .auth-btn:hover {
   background: #1d4ed8;
 }
 
+.auth-btn:active {
+  transform: translateY(1px);
+}
+
 .auth-footer {
   text-align: center;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
   color: #64748b;
 }
 
 .auth-footer a {
   color: #2563eb;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .auth-footer a:hover {
@@ -84,12 +149,20 @@
 }
 
 .error-message {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #ef4444;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  padding: 0.875rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
   text-align: center;
   border: 1px solid #fecaca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.input-group input {
+  padding-left: 3.5rem !important;
 }

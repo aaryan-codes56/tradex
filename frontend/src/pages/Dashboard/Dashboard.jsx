@@ -43,6 +43,40 @@ const Dashboard = () => {
     const [takeProfitPrice, setTakeProfitPrice] = useState('');
     const [tradeStatus, setTradeStatus] = useState('');
 
+    const [chartData, setChartData] = useState(null);
+    const [chartTimeframe, setChartTimeframe] = useState('30d');
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (!prices.length) return;
+            // Default to first coin or selected coin
+            const coin = selectedCoin?.symbol || 'btc';
+            try {
+                const { data } = await axios.get(`http://localhost:5001/api/market/history/${coin}`);
+
+                setChartData({
+                    labels: data.map(d => new Date(d.timestamp).toLocaleDateString()),
+                    datasets: [
+                        {
+                            label: `${coin.toUpperCase()} Price History`,
+                            data: data.map(d => d.price),
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                });
+            } catch (error) {
+                console.error('Error fetching history', error);
+            }
+        };
+
+        if (prices.length > 0) {
+            fetchHistory();
+        }
+    }, [prices, selectedCoin]);
+
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -52,6 +86,7 @@ const Dashboard = () => {
             const sentimentRes = await axios.get('http://localhost:5001/api/market/sentiment');
             const userRes = await axios.get('http://localhost:5001/api/trades/positions', config);
 
+            console.log("Dashboard: fetched data", { prices: pricesRes.data, user: userRes.data });
             setPrices(pricesRes.data);
             setSentiment(sentimentRes.data);
             setUser(userRes.data);
@@ -61,6 +96,8 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
+
+    console.log("Dashboard: rendering", { loading, user, prices });
 
     useEffect(() => {
         fetchData();
@@ -134,46 +171,14 @@ const Dashboard = () => {
 
     if (loading) return <div className="loading">Loading Market Data...</div>;
 
-    const [chartData, setChartData] = useState(null);
-    const [chartTimeframe, setChartTimeframe] = useState('30d');
 
-    useEffect(() => {
-        const fetchHistory = async () => {
-            if (!prices.length) return;
-            // Default to first coin or selected coin
-            const coin = selectedCoin?.symbol || 'btc';
-            try {
-                const { data } = await axios.get(`http://localhost:5001/api/market/history/${coin}`);
-
-                setChartData({
-                    labels: data.map(d => new Date(d.timestamp).toLocaleDateString()),
-                    datasets: [
-                        {
-                            label: `${coin.toUpperCase()} Price History`,
-                            data: data.map(d => d.price),
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }
-                    ]
-                });
-            } catch (error) {
-                console.error('Error fetching history', error);
-            }
-        };
-
-        if (prices.length > 0) {
-            fetchHistory();
-        }
-    }, [prices, selectedCoin]);
 
     return (
         <div className="dashboard-container">
             <header className="dashboard-header">
                 <div>
                     <h1>Market Overview</h1>
-                    <p className="subtitle">Paper Balance: ${user?.balance?.toFixed(2)}</p>
+                    <p className="subtitle">Paper Balance: ${user?.balance ? user.balance.toFixed(2) : '0.00'}</p>
                 </div>
                 <div className="header-cards">
                     {aiPrediction && (
@@ -294,7 +299,7 @@ const Dashboard = () => {
             )}
 
             <div className="prices-grid">
-                {prices.map((coin) => (
+                {Array.isArray(prices) && prices.map((coin) => (
                     <div key={coin.id} className="coin-card">
                         <div className="coin-info">
                             <h3>{coin.name}</h3>

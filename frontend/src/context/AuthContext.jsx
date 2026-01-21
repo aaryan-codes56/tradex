@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
                     // setUser(res.data);
 
                     // Fetch user profile to validate token
-                    const { data } = await axios.get('http://localhost:5001/api/user/profile', config);
+                    const { data } = await axios.get('http://localhost:5001/api/auth/profile', config);
                     setUser(data);
 
                 } catch (error) {

@@ -34,7 +34,7 @@ const NewsFeed = () => {
                                 <span className="news-time">{item.time}</span>
                             </div>
                         </div>
-                        <div className={`news-sentiment sentiment-${item.sentiment.toLowerCase()}`}>
+                        <div className={`news-sentiment sentiment-${item.sentiment ? item.sentiment.toLowerCase() : 'neutral'}`}>
                             {item.sentiment}
                         </div>
                     </a>
